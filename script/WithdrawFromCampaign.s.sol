@@ -24,7 +24,7 @@ contract WithdrawFromCampaign is Script {
         console.log("Contributed:", SEND_VALUE);
 
          (
-            uint256 goal,,uint256 amountFunded,,,
+            uint256 goal,,uint256 amountFunded,,,,
         ) = crowdfunder.getCampaignDetails(0);
 
         console.log("Amount funded = goal?", goal == amountFunded);

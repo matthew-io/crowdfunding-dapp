@@ -1,6 +1,6 @@
 console.log("Ethers.js version:", ethers.version);
 
-const contractAddress = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
+const contractAddress = "0x59b670e9fA9D0A427751Af201D676719a970857b";
 const contractAbi = [
 	{
 		"inputs": [],
@@ -36,6 +36,51 @@ const contractAbi = [
 		"inputs": [],
 		"name": "Crowdfunder__WithdrawFailed",
 		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "message",
+				"type": "string"
+			}
+		],
+		"name": "Debug",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "message",
+				"type": "string"
+			}
+		],
+		"name": "DebugString",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "message",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "DebugUint",
+		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -180,6 +225,11 @@ const contractAbi = [
 				"internalType": "address",
 				"name": "creator",
 				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "isActive",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -319,7 +369,9 @@ async function getCampaignDetails() {
         console.log("Total campaigns:", campaignLength.toString());
 
         let campaignList = document.getElementById("campaignsList");
+        let completedCampaignList = document.getElementById("completedCampaignsList");
         campaignList.innerHTML = "";
+        completedcampaignList = "";
 
         for (let i = 0; i < campaignLength; i++) {
             const campaign = await contract.getCampaignDetails(i);
@@ -343,9 +395,18 @@ async function getCampaignDetails() {
             contributeButton.classList.add("button", "is-primary");
             withdrawButton.classList.add("button", "is-warning");
 
-            progressBar.value = ethers.formatEther(campaign.amountFunded.toString());
-            progressBar.max = ethers.formatEther(campaign.goal.toString());
-            progressLabel.textContent = `${ethers.formatEther(campaign.amountFunded.toString())} / ${ethers.formatEther(campaign.goal.toString())} ETH`;
+            console.log(campaign.isActive)
+
+            if (campaign.isActive) {
+                progressBar.value = ethers.formatEther(campaign.amountFunded.toString());
+                progressBar.max = ethers.formatEther(campaign.goal.toString());
+                progressLabel.textContent = `${ethers.formatEther(campaign.amountFunded.toString())} / ${ethers.formatEther(campaign.goal.toString())} ETH`;
+            } else {
+                progressBar.value = ethers.formatEther(campaign.goal.toString());
+                progressBar.max = ethers.formatEther(campaign.goal.toString());
+                progressLabel.textContent = `${ethers.formatEther(campaign.goal.toString())} / ${ethers.formatEther(campaign.goal.toString())} ETH`;
+            }
+    
 
             campaignTitle.textContent = `Campaign ${i + 1}: ${campaign.title}`;
             campaignDescription.textContent = campaign.description;
@@ -373,13 +434,17 @@ async function getCampaignDetails() {
 
             buttonContainer.appendChild(contributeColumn);
             buttonContainer.appendChild(withdrawColumn);
-
+            
             campaignDiv.appendChild(campaignTitle);
             campaignDiv.appendChild(campaignDescription);
             campaignDiv.appendChild(progressBarDiv);
-            campaignDiv.appendChild(buttonContainer);
 
-            campaignList.appendChild(campaignDiv);
+            if (campaign.isActive) {
+                campaignDiv.appendChild(buttonContainer);
+                campaignList.appendChild(campaignDiv);
+            } else {
+                completedCampaignList.appendChild(campaignDiv);
+            }
         }
     } catch (error) {
         console.error("Error fetching campaign details:", error);
@@ -420,7 +485,7 @@ async function withdrawFromCampaign(campaignId) {
         const tx = await contract.withdrawFromCampaign(campaignId);
         const receipt = await tx.wait();
         console.log("Successfully withdrew!", receipt);
-
+        
         window.location.reload();
         
     } catch (error) {

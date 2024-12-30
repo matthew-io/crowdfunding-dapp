@@ -72,6 +72,9 @@ contract Crowdfunder {
         campaign.amountFunded += msg.value;
         campaign.contributors[msg.sender] += msg.value;
 
+        if (campaign.amountFunded == campaign.goal)
+            campaign.isActive = false;
+
         emit contributionMade(campaignId, msg.sender, msg.value);
     }
 
@@ -85,7 +88,8 @@ contract Crowdfunder {
         uint256 amountFunded,
         string memory title,
         string memory description,
-        address creator
+        address creator,
+        bool isActive
     ) {
        
         Campaign storage campaign = s_campaigns[campaignId];
@@ -96,7 +100,8 @@ contract Crowdfunder {
             campaign.amountFunded,
             campaign.title,
             campaign.description,
-            campaign.creator
+            campaign.creator,
+            campaign.isActive
         );
     }
 
@@ -128,8 +133,6 @@ contract Crowdfunder {
         emit campaignFundsWithdrawn(campaignId, msg.sender, amountToWithdraw);
     }
 
-
-    
     modifier validCampaignId(uint256 campaignId) {
         if (campaignId >= s_campaigns.length)
             revert Crowdfunder__InvalidCampaign();

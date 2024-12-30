@@ -10,6 +10,9 @@
 
 </head>
 <body>
+
+    <!-- nav menu  -->
+
     <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item">
@@ -24,6 +27,8 @@
         </div>
     </nav>
 
+    <!-- Active campaign section -->
+
     <section class="section">
         <div class="container">
             <div class="is-flex is-justify-content-space-between is-align-items-center">
@@ -35,6 +40,20 @@
                 </ul>
         </div>
     </section>
+
+    <!-- Completed campaigns section -->
+
+    <section clas="section">
+        <div class="container">
+            <div class="is-flex is-justify-content-space-between is-align-items.center">
+                <h2 class="title mb-4">Completed Campaigns</h2>
+            </div>
+            <ul id="completedCampaignsList" class="content">
+            </ul>
+        </div>
+    </section>
+
+    <!-- Create campaign modal menu -->
 
     <div class="modal" id="createCampaignModal">
         <div class="modal-background"></div>
@@ -77,6 +96,8 @@
             </footer>
         </div>
     </div>
+
+    <!-- scripts -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
     <script src="./js/script.js"></script>

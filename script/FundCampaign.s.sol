@@ -25,7 +25,7 @@ contract FundCampaign is Script {
         console.log("Contributed:", SEND_VALUE);
 
         (
-            ,,uint256 amountFunded,,,
+            ,,uint256 amountFunded,,,,
         ) = 
         crowdfunder.getCampaignDetails(0);
 
