@@ -252,7 +252,6 @@ const contractAbi = [
 let provider;
 let signer;
 
-
 async function connectWallet() {
     if (!window.ethereum) {
         console.error("No Ethereum provider found. Install Metamask.");
