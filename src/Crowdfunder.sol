@@ -2,10 +2,12 @@
 
 pragma solidity ^0.8.0;
 
+
 contract Crowdfunder {
 
     // Errors
 
+    event Debug(string message);
     error Crowdfunder__NoEthSent(); //  if no eth sent to contract balance
     error Crowdfunder__InvalidCampaign(); // no campaign exists at given ID
     error Crowdfunder__CampaignHasEnded(); // if campaign has gone past the deadline (for contributing)
@@ -18,6 +20,8 @@ contract Crowdfunder {
 
     event contributionMade(uint256 indexed campaignId, address indexed contributor, uint256 amount); // emitted whenever a contribution is made to a campaign
     event campaignFundsWithdrawn(uint256 indexed campaignId, address indexed creator, uint256 amount); // emitted whenever funds are withdrawn from a campaign
+    event DebugString(string message);
+    event DebugUint(string message, uint256 value);
 
     // Structs
     
@@ -99,25 +103,31 @@ contract Crowdfunder {
     function withdrawFromCampaign(uint256 campaignId) external validCampaignId(campaignId) {
         Campaign storage campaign = s_campaigns[campaignId];
 
-        if (msg.sender != campaign.creator)
+        if (msg.sender != campaign.creator) {
             revert Crowdfunder__NotCampaignOwner();
+        }
 
-        if (block.timestamp <= campaign.deadline)
+        if (block.timestamp <= campaign.deadline && campaign.amountFunded != campaign.goal) {
             revert Crowdfunder__CampaignIsOngoing();
+        }
 
-        if (campaign.amountFunded == 0)
+        if (campaign.amountFunded == 0) {
             revert Crowdfunder__CampaignFundsAreEmpty();
+        }
 
         uint256 amountToWithdraw = campaign.amountFunded;
         campaign.amountFunded = 0;
         campaign.isActive = false;
+
         (bool success, ) = campaign.creator.call{value: amountToWithdraw}("");
-        
-        if (success == false)
+        if (!success) {
+            emit Debug("Withdraw failed");
             revert Crowdfunder__WithdrawFailed();
+        }
 
         emit campaignFundsWithdrawn(campaignId, msg.sender, amountToWithdraw);
-    }   
+    }
+
 
     
     modifier validCampaignId(uint256 campaignId) {

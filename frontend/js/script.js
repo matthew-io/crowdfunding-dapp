@@ -1,6 +1,6 @@
 console.log("Ethers.js version:", ethers.version);
 
-const contractAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+const contractAddress = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
 const contractAbi = [
 	{
 		"inputs": [],
@@ -298,10 +298,12 @@ async function createCampaign(ethAmount, deadline, title, description) {
     
         const receipt = await tx.wait();
         console.log("Transaction complete:", receipt);
-		window.location.reload();
     } catch (error) {
         console.error("Error interacting with the contract:", error);
     }
+
+    window.location.reload();
+
 }
 
 async function getCampaignDetails() {
@@ -330,14 +332,16 @@ async function getCampaignDetails() {
             const progressBar = document.createElement("progress");
             const progressLabel = document.createElement("span");
             const contributeButton = document.createElement("button");
+            const withdrawButton = document.createElement("button");
 
             campaignDiv.classList.add("box", "has-shadow", "mb-4", "p-4");
             campaignTitle.classList.add("title", "is-4", "mb-2");
             campaignDescription.classList.add("content", "mb-4");
             progressBarDiv.classList.add("has-text-centered", "mb-3");
-            progressBar.classList.add("progress", "is-warning", "mb-1");
+            progressBar.classList.add("progress", "is-primary", "mb-1");
             progressLabel.classList.add("is-size-6", "has-text-grey-light");
             contributeButton.classList.add("button", "is-primary");
+            withdrawButton.classList.add("button", "is-warning");
 
             progressBar.value = ethers.formatEther(campaign.amountFunded.toString());
             progressBar.max = ethers.formatEther(campaign.goal.toString());
@@ -346,15 +350,34 @@ async function getCampaignDetails() {
             campaignTitle.textContent = `Campaign ${i + 1}: ${campaign.title}`;
             campaignDescription.textContent = campaign.description;
             contributeButton.textContent = "Contribute";
+            withdrawButton.textContent = 'Withdraw';
             contributeButton.addEventListener("click", () => contributeToCampaign(i));
+            withdrawButton.addEventListener("click", () => withdrawFromCampaign(i));
 
             progressBarDiv.appendChild(progressBar);
             progressBarDiv.appendChild(progressLabel);
 
+            const buttonContainer = document.createElement("div");
+            buttonContainer.classList.add("columns", "is-mobile");
+
+            const contributeColumn = document.createElement("div");
+            contributeColumn.classList.add("column");
+            const withdrawColumn = document.createElement("div");
+            withdrawColumn.classList.add("column");
+
+            contributeButton.classList.add("is-fullwidth");
+            withdrawButton.classList.add("is-fullwidth");
+
+            contributeColumn.appendChild(contributeButton);
+            withdrawColumn.appendChild(withdrawButton);
+
+            buttonContainer.appendChild(contributeColumn);
+            buttonContainer.appendChild(withdrawColumn);
+
             campaignDiv.appendChild(campaignTitle);
             campaignDiv.appendChild(campaignDescription);
             campaignDiv.appendChild(progressBarDiv);
-            campaignDiv.appendChild(contributeButton);
+            campaignDiv.appendChild(buttonContainer);
 
             campaignList.appendChild(campaignDiv);
         }
@@ -362,8 +385,6 @@ async function getCampaignDetails() {
         console.error("Error fetching campaign details:", error);
     }
 }
-
-
 
 async function contributeToCampaign(campaignId) {
 	if (!signer) {
@@ -385,6 +406,27 @@ async function contributeToCampaign(campaignId) {
 	} catch (error) {
 		console.error("Error contributing to campaign:", error);
 	}
+}
+
+async function withdrawFromCampaign(campaignId) {
+    if (!signer) {
+        console.error("No wallet detected");
+        return;
+    }
+
+    try {
+        const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+
+        const tx = await contract.withdrawFromCampaign(campaignId);
+        const receipt = await tx.wait();
+        console.log("Successfully withdrew!", receipt);
+
+        window.location.reload();
+        
+    } catch (error) {
+        console.log("Could not withdraw from campaign.", error);
+        return;
+    }
 }
 
 async function checkWalletConnection() {
@@ -452,3 +494,14 @@ createCampaignButton.addEventListener("click", () => {
 	createCampaign(goal, deadline, title, description);
 })
 
+const modal = document.getElementById("createCampaignModal");
+const openModalButton = document.getElementById("createCampaignModalButton");
+const closeModalButton = document.getElementById("closeModalButton");
+const cancelModalButton = document.getElementById("cancelModalButton");
+
+const openModal = () => modal.classList.add("is-active");
+const closeModal = () => modal.classList.remove("is-active");
+
+openModalButton.addEventListener("click", openModal);
+closeModalButton.addEventListener("click", closeModal);
+cancelModalButton.addEventListener("click", closeModal);

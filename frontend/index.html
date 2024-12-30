@@ -80,36 +80,5 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
     <script src="./js/script.js"></script>
-    <script>
-        const modal = document.getElementById("createCampaignModal");
-        const openModalButton = document.getElementById("createCampaignModalButton");
-        const closeModalButton = document.getElementById("closeModalButton");
-        const cancelModalButton = document.getElementById("cancelModalButton");
-
-        const openModal = () => modal.classList.add("is-active");
-        const closeModal = () => modal.classList.remove("is-active");
-
-        openModalButton.addEventListener("click", openModal);
-        closeModalButton.addEventListener("click", closeModal);
-        cancelModalButton.addEventListener("click", closeModal);
-
-        document.getElementById("createCampaignButton").addEventListener("click", (event) => {
-            event.preventDefault();
-            const goal = document.getElementById("cGoal").value;
-            const deadlineDays = document.getElementById("cDeadline").value;
-            const title = document.getElementById("cTitle").value;
-            const description = document.getElementById("cDesc").value;
-
-            if (!goal || !deadlineDays || !title || !description) {
-                alert("All fields are required!");
-                return;
-            }
-
-            const deadline = Math.floor(Date.now() / 1000) + parseInt(deadlineDays) * 24 * 60 * 60;
-
-            createCampaign(goal, deadline, title, description);
-            closeModal();
-        });
-    </script>
 </body>
 </html>
