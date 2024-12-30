@@ -1,0 +1,10 @@
+html, body {
+    font-family: 'Electrolize', sans-serif;
+}
+.title {
+    font-family: 'Electrolize', sans-serif;
+    font-weight: 700;
+}
+.content, .button {
+    font-family: 'Electrolize', sans-serif;
+}

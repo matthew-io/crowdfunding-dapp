@@ -1,6 +1,6 @@
 console.log("Ethers.js version:", ethers.version);
 
-const contractAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
+const contractAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
 const contractAbi = [
 	{
 		"inputs": [],
@@ -317,24 +317,44 @@ async function getCampaignDetails() {
         console.log("Total campaigns:", campaignLength.toString());
 
         let campaignList = document.getElementById("campaignsList");
+        campaignList.innerHTML = "";
 
         for (let i = 0; i < campaignLength; i++) {
             const campaign = await contract.getCampaignDetails(i);
             console.log("Campaign Details:", campaign);
 
-			const campaignDiv = document.createElement("div");
-            const listItem = document.createElement("li");
-            const listButton = document.createElement("button");
+            const campaignDiv = document.createElement("div");
+            const campaignTitle = document.createElement("h3");
+            const campaignDescription = document.createElement("p");
+            const progressBarDiv = document.createElement("div");
+            const progressBar = document.createElement("progress");
+            const progressLabel = document.createElement("span");
+            const contributeButton = document.createElement("button");
 
-			listButton.id = "contributeButton-" + i;
+            campaignDiv.classList.add("box", "has-shadow", "mb-4", "p-4");
+            campaignTitle.classList.add("title", "is-4", "mb-2");
+            campaignDescription.classList.add("content", "mb-4");
+            progressBarDiv.classList.add("has-text-centered", "mb-3");
+            progressBar.classList.add("progress", "is-warning", "mb-1");
+            progressLabel.classList.add("is-size-6", "has-text-grey-light");
+            contributeButton.classList.add("button", "is-primary");
 
-			listButton.textContent = "Contribute";
-			listButton.addEventListener("click", () => contributeToCampaign(i));
+            progressBar.value = ethers.formatEther(campaign.amountFunded.toString());
+            progressBar.max = ethers.formatEther(campaign.goal.toString());
+            progressLabel.textContent = `${ethers.formatEther(campaign.amountFunded.toString())} / ${ethers.formatEther(campaign.goal.toString())} ETH`;
 
-			listItem.textContent = `Campaign ${i + 1}: ${campaign.title} - ${campaign.description} - ${ethers.formatEther(campaign.amountFunded.toString())} ETH`;
-			
-			campaignDiv.appendChild(listItem);
-			campaignDiv.appendChild(listButton);
+            campaignTitle.textContent = `Campaign ${i + 1}: ${campaign.title}`;
+            campaignDescription.textContent = campaign.description;
+            contributeButton.textContent = "Contribute";
+            contributeButton.addEventListener("click", () => contributeToCampaign(i));
+
+            progressBarDiv.appendChild(progressBar);
+            progressBarDiv.appendChild(progressLabel);
+
+            campaignDiv.appendChild(campaignTitle);
+            campaignDiv.appendChild(campaignDescription);
+            campaignDiv.appendChild(progressBarDiv);
+            campaignDiv.appendChild(contributeButton);
 
             campaignList.appendChild(campaignDiv);
         }
@@ -342,6 +362,8 @@ async function getCampaignDetails() {
         console.error("Error fetching campaign details:", error);
     }
 }
+
+
 
 async function contributeToCampaign(campaignId) {
 	if (!signer) {
@@ -400,10 +422,15 @@ connectWalletButton.addEventListener("click", () => {
 
 document.addEventListener("DOMContentLoaded", async () => {
 	await checkWalletConnection();
-	if (signer)
+	if (signer) {
 		connectWalletButton.textContent = "Connected";
 		connectWalletButton.disabled = true;
 		connectWalletButton.style.cursor = 'not-allowed';
+	} else {
+		connectWalletButton.textContent = 'Connect Wallet';
+		connectWalletButton.disable = false;
+		connectWalletButton.style.cursor = 'normal';
+	};
 })
 
 createCampaignButton.addEventListener("click", () => {
@@ -424,3 +451,4 @@ createCampaignButton.addEventListener("click", () => {
 
 	createCampaign(goal, deadline, title, description);
 })
+

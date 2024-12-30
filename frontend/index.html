@@ -3,26 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Decentralized Crowdfunder</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" href="./styles/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Electrolize&display=swap" rel="stylesheet">
+
 </head>
 <body>
-    <h1>Decentralized Crowdfunder</h1>
-    <button id="connectWalletButton">Connect Wallet</button>
-    <form>
-        <label for="campaignGoal">Campaign Goal (in ETH)</label>
-        <input type="text" id="cGoal" name="cGoal"><br>
-        <label for="campaignDeadline">Campaign Deadline (in days)</label>
-        <input type="text" id="cDeadline" name="cDeadline"><br>
-        <label for="campaignTitle">Campaign Title</label>
-        <input type="text" id="cTitle" name="cTitle"><br>
-        <label for="campaignDescription">Campaign Desciption</label>
-        <input type="text" id="cDesc" name="cDesc"><br>
-        <button id="createCampaignButton">Create Campaign</button>
-    </form>
-    <ol id="campaignsList">
+    <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item">
+                <img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024" alt="Ethereum Logo">
+                <h1 class="has-text-weight-bold">Crowdfunding dApp</h1>
+            </a>
+        </div>
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <button class="button is-light" id="connectWalletButton">Connect Wallet</button>
+            </div>
+        </div>
+    </nav>
 
-    </ol>
+    <section class="section">
+        <div class="container">
+            <div class="is-flex is-justify-content-space-between is-align-items-center">
+                <h2 class="title">Active Campaigns</h2>
+                <button class="button is-primary" id="createCampaignModalButton">+ New Campaign</button>
+            </div>
+                <ul id="campaignsList" class="content">
+                    <!-- Campaigns will be dynamically added here -->
+                </ul>
+        </div>
+    </section>
+
+    <div class="modal" id="createCampaignModal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Create a New Campaign</p>
+                <button class="delete" aria-label="close" id="closeModalButton"></button>
+            </header>
+            <section class="modal-card-body">
+                <form id="createCampaignForm">
+                    <div class="field">
+                        <label class="label" for="campaignGoal">Campaign Goal (in ETH)</label>
+                        <div class="control">
+                            <input class="input" type="text" id="cGoal" name="cGoal" placeholder="e.g., 10 ETH">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" for="campaignDeadline">Campaign Deadline (in days)</label>
+                        <div class="control">
+                            <input class="input" type="text" id="cDeadline" name="cDeadline" placeholder="e.g., 30">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" for="campaignTitle">Campaign Title</label>
+                        <div class="control">
+                            <input class="input" type="text" id="cTitle" name="cTitle" placeholder="e.g., Build a DApp">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" for="campaignDescription">Campaign Description</label>
+                        <div class="control">
+                            <textarea class="textarea" id="cDesc" name="cDesc" placeholder="Describe your campaign"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-primary" id="createCampaignButton">Create Campaign</button>
+                <button class="button" id="cancelModalButton">Cancel</button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+    <script src="./js/script.js"></script>
+    <script>
+        const modal = document.getElementById("createCampaignModal");
+        const openModalButton = document.getElementById("createCampaignModalButton");
+        const closeModalButton = document.getElementById("closeModalButton");
+        const cancelModalButton = document.getElementById("cancelModalButton");
+
+        const openModal = () => modal.classList.add("is-active");
+        const closeModal = () => modal.classList.remove("is-active");
+
+        openModalButton.addEventListener("click", openModal);
+        closeModalButton.addEventListener("click", closeModal);
+        cancelModalButton.addEventListener("click", closeModal);
+
+        document.getElementById("createCampaignButton").addEventListener("click", (event) => {
+            event.preventDefault();
+            const goal = document.getElementById("cGoal").value;
+            const deadlineDays = document.getElementById("cDeadline").value;
+            const title = document.getElementById("cTitle").value;
+            const description = document.getElementById("cDesc").value;
+
+            if (!goal || !deadlineDays || !title || !description) {
+                alert("All fields are required!");
+                return;
+            }
+
+            const deadline = Math.floor(Date.now() / 1000) + parseInt(deadlineDays) * 24 * 60 * 60;
+
+            createCampaign(goal, deadline, title, description);
+            closeModal();
+        });
+    </script>
 </body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
-<script src="./js/script.js"></script>
 </html>
