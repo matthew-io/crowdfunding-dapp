@@ -295,9 +295,25 @@ async function createCampaign() {
     
         const receipt = await tx.wait();
         console.log("Transaction complete:", receipt);
+
+        await getCampaignDetails();
     } catch (error) {
         console.error("Error interacting with the contract:", error);
     }
+}
+
+async function getCampaignDetails() {
+    const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+    
+    let campaignLength = await contract.getCampaignCount();
+    let campaignList = document.getElementById("campaignsList")
+
+    for (let i =0;i<campaignLength;i++) {
+        let campaign = await contract.getCampaignDetails(i);
+        console.log(campaign[1])
+    }
+
+    console.log(Number(campaignLength));
 }
 
 const connectWalletButton = document.getElementById("connectWalletButton");
@@ -310,3 +326,4 @@ connectWalletButton.addEventListener("click", () => {
 createCampaignButton.addEventListener("click", () => {
     createCampaign();
 });
+
