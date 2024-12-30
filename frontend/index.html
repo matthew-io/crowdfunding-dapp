@@ -7,8 +7,18 @@
 </head>
 <body>
     <h1>Decentralized Crowdfunder</h1>
-    <button id="createCampaignButton">Create Campaign</button>
     <button id="connectWalletButton">Connect Wallet</button>
+    <form>
+        <label for="campaignGoal">Campaign Goal (in ETH)</label>
+        <input type="text" id="cGoal" name="cGoal"><br>
+        <label for="campaignDeadline">Campaign Deadline (in days)</label>
+        <input type="text" id="cDeadline" name="cDeadline"><br>
+        <label for="campaignTitle">Campaign Title</label>
+        <input type="text" id="cTitle" name="cTitle"><br>
+        <label for="campaignDescription">Campaign Desciption</label>
+        <input type="text" id="cDesc" name="cDesc"><br>
+        <button id="createCampaignButton">Create Campaign</button>
+    </form>
     <ol id="campaignsList">
 
     </ol>
