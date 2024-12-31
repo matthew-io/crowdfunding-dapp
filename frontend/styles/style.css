@@ -8,3 +8,19 @@ html, body {
 .content, .button {
     font-family: 'Electrolize', sans-serif;
 }
+
+.footer {
+    margin-top: auto;
+}
+
+.info {
+    font-size: 18px;
+}
+
+pre {
+    font-family: monospace; /* Ensures the ASCII art displays correctly */
+    font-size: 8px; /* Adjust as needed */
+    white-space: pre-wrap; /* Preserve line breaks */
+    margin-bottom: 12px;
+    background-color: transparent;
+}

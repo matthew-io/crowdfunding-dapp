@@ -15,10 +15,6 @@
 
     <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a class="navbar-item">
-                <img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024" alt="Ethereum Logo">
-                <h1 class="has-text-weight-bold">Crowdfunding dApp</h1>
-            </a>
         </div>
         <div class="navbar-end">
             <div class="navbar-item">
@@ -27,12 +23,38 @@
         </div>
     </nav>
 
+    <!-- title section -->
+
+    <section class="section">
+        <div class="container has-text-centered">
+            <pre>
+⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⣶⣾⣿⣿⣿⣿⣷⣶⣦⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⣠⣴⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⣿⣿⣦⣄⠀⠀⠀⠀⠀
+⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀
+⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠙⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀
+⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀⠀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀
+⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⣀⠀⠀⠀⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿⡆
+⣾⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⣀⡤⠖⠛⠉⠛⠶⣤⣀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣷
+⣿⣿⣿⣿⣿⣿⣿⣿⡿⠞⠋⠁⠀⠀⠀⠀⠀⠀⠀⠈⠙⠳⣿⣿⣿⣿⣿⣿⣿⣿
+⢿⣿⣿⣿⣿⣿⣿⣿⣿⡳⢦⣄⠀⠀⠀⠀⠀⠀⠀⣠⡴⢚⣿⣿⣿⣿⣿⣿⣿⡿
+⠸⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠈⠙⠶⣄⣀⣤⠖⠋⠁⣠⣿⣿⣿⣿⣿⣿⣿⣿⠇
+⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠉⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀
+⠀⠀⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⠟⠀⠀
+⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀
+⠀⠀⠀⠀⠀⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠋⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠻⠿⢿⣿⣿⣿⣿⡿⠿⠟⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀
+            </pre>
+            <h1 class="title is-underlined">Ethereum Crowdfunder</h1>
+            <p class="info">To use this dApp you'll need a wallet and some Sepolia ETH. You can acquire Sepolia ETH from <a href="https://sepolia-faucet.pk910.de/" target="_blank">this</a> PoW faucet.</p>
+        </div>
+    </section>
+
     <!-- Active campaign section -->
 
     <section class="section">
         <div class="container">
             <div class="is-flex is-justify-content-space-between is-align-items-center">
-                <h2 class="title">Active Campaigns</h2>
+                <h2 class="title is-underlined">Active Campaigns</h2>
                 <button class="button is-primary" id="createCampaignModalButton">+ New Campaign</button>
             </div>
                 <ul id="campaignsList" class="content">
@@ -46,7 +68,7 @@
     <section clas="section">
         <div class="container">
             <div class="is-flex is-justify-content-space-between is-align-items.center">
-                <h2 class="title mb-4">Completed Campaigns</h2>
+                <h2 class="title is-underlined mb-4">Completed Campaigns</h2>
             </div>
             <ul id="completedCampaignsList" class="content">
             </ul>
@@ -96,6 +118,26 @@
             </footer>
         </div>
     </div>
+    
+    <!-- contribute modal -->
+
+    
+
+    <!-- Footer section -->
+
+    <footer class="footer" style="margin-top: 6rem;">
+        <div class="content has-text-centered">
+          <p>
+            <!-- <strong>Bulma</strong> by <a href="https://jgthms.com">Jeremy Thomas</a>.
+            The source code is licensed
+            <a href="https://opensource.org/license/mit">MIT</a>. The
+            website content is licensed
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0//"
+              >CC BY NC SA 4.0</a -->
+            <!-- >. -->
+          </p>
+        </div>
+      </footer>
 
     <!-- scripts -->
 

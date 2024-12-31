@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
-
+pragma solidity ^0.8.18;
 
 contract Crowdfunder {
 
@@ -34,6 +33,7 @@ contract Crowdfunder {
         string description;
         address creator;
         bool isActive;
+        bool fundsWithdrawn;
     }
 
     // Storage variables
@@ -55,6 +55,7 @@ contract Crowdfunder {
         newCampaign.description = _description;
         newCampaign.creator = msg.sender;
         newCampaign.isActive = true;
+        newCampaign.fundsWithdrawn = false;
     }
 
     function contributeToCampaign(uint256 campaignId) external payable {
@@ -72,7 +73,7 @@ contract Crowdfunder {
         campaign.amountFunded += msg.value;
         campaign.contributors[msg.sender] += msg.value;
 
-        if (campaign.amountFunded == campaign.goal)
+        if (campaign.amountFunded >= campaign.goal)
             campaign.isActive = false;
 
         emit contributionMade(campaignId, msg.sender, msg.value);
@@ -89,9 +90,10 @@ contract Crowdfunder {
         string memory title,
         string memory description,
         address creator,
-        bool isActive
+        bool isActive,
+        bool fundsWithdrawn
     ) {
-       
+    
         Campaign storage campaign = s_campaigns[campaignId];
 
         return (
@@ -101,7 +103,8 @@ contract Crowdfunder {
             campaign.title,
             campaign.description,
             campaign.creator,
-            campaign.isActive
+            campaign.isActive,
+            campaign.fundsWithdrawn
         );
     }
 
@@ -130,6 +133,7 @@ contract Crowdfunder {
             revert Crowdfunder__WithdrawFailed();
         }
 
+        campaign.fundsWithdrawn = true;
         emit campaignFundsWithdrawn(campaignId, msg.sender, amountToWithdraw);
     }
 

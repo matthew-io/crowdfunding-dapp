@@ -1,6 +1,6 @@
 console.log("Ethers.js version:", ethers.version);
 
-const contractAddress = "0x59b670e9fA9D0A427751Af201D676719a970857b";
+const contractAddress = "0x3b8aD993530426e2bd4Ce3C264Af8685d4F46667";
 const contractAbi = [
 	{
 		"inputs": [],
@@ -230,6 +230,11 @@ const contractAbi = [
 				"internalType": "bool",
 				"name": "isActive",
 				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "fundsWithdrawn",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -279,6 +284,11 @@ const contractAbi = [
 				"internalType": "bool",
 				"name": "isActive",
 				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "fundsWithdrawn",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -304,7 +314,7 @@ let signer;
 
 async function connectWallet() {
     if (!window.ethereum) {
-        console.error("No Ethereum provider found. Install Metamask.");
+        console.error("No Ethereum provider found. A wallet is required.");
         return;
     }
 
@@ -364,6 +374,8 @@ async function getCampaignDetails() {
 
     const contract = new ethers.Contract(contractAddress, contractAbi, signer);
 
+    // this is shambolic i know
+
     try {
         const campaignLength = await contract.getCampaignCount();
         console.log("Total campaigns:", campaignLength.toString());
@@ -371,78 +383,106 @@ async function getCampaignDetails() {
         let campaignList = document.getElementById("campaignsList");
         let completedCampaignList = document.getElementById("completedCampaignsList");
         campaignList.innerHTML = "";
-        completedcampaignList = "";
+        completedCampaignList.innerHTML = "";
 
         for (let i = 0; i < campaignLength; i++) {
             const campaign = await contract.getCampaignDetails(i);
             console.log("Campaign Details:", campaign);
 
             const campaignDiv = document.createElement("div");
-            const campaignTitle = document.createElement("h3");
-            const campaignDescription = document.createElement("p");
-            const progressBarDiv = document.createElement("div");
-            const progressBar = document.createElement("progress");
-            const progressLabel = document.createElement("span");
-            const contributeButton = document.createElement("button");
-            const withdrawButton = document.createElement("button");
-
             campaignDiv.classList.add("box", "has-shadow", "mb-4", "p-4");
-            campaignTitle.classList.add("title", "is-4", "mb-2");
-            campaignDescription.classList.add("content", "mb-4");
-            progressBarDiv.classList.add("has-text-centered", "mb-3");
-            progressBar.classList.add("progress", "is-primary", "mb-1");
-            progressLabel.classList.add("is-size-6", "has-text-grey-light");
-            contributeButton.classList.add("button", "is-primary");
-            withdrawButton.classList.add("button", "is-warning");
 
-            console.log(campaign.isActive)
+            const campaignTitle = document.createElement("h3");
+            campaignTitle.classList.add("title", "is-4", "mb-2");
+            campaignTitle.textContent = `Campaign ${i + 1}: ${campaign.title}`;
+            campaignDiv.appendChild(campaignTitle);
+
+            const campaignDescription = document.createElement("p");
+            campaignDescription.classList.add("content", "mb-4");
+            campaignDescription.textContent = campaign.description;
+            campaignDiv.appendChild(campaignDescription);
+
+            const progressBarDiv = document.createElement("div");
+            progressBarDiv.classList.add("has-text-centered", "mb-3");
+
+            const progressBar = document.createElement("progress");
+            progressBar.classList.add("progress", "is-primary", "mb-1");
+
+            const progressLabel = document.createElement("span");
+            progressLabel.classList.add("is-size-6", "has-text-grey-light");
 
             if (campaign.isActive) {
                 progressBar.value = ethers.formatEther(campaign.amountFunded.toString());
                 progressBar.max = ethers.formatEther(campaign.goal.toString());
-                progressLabel.textContent = `${ethers.formatEther(campaign.amountFunded.toString())} / ${ethers.formatEther(campaign.goal.toString())} ETH`;
+                progressLabel.textContent =
+                    `${ethers.formatEther(campaign.amountFunded.toString())} / `
+                    + `${ethers.formatEther(campaign.goal.toString())} ETH`;
             } else {
                 progressBar.value = ethers.formatEther(campaign.goal.toString());
                 progressBar.max = ethers.formatEther(campaign.goal.toString());
-                progressLabel.textContent = `${ethers.formatEther(campaign.goal.toString())} / ${ethers.formatEther(campaign.goal.toString())} ETH`;
+                progressLabel.textContent =
+                    `${ethers.formatEther(campaign.goal.toString())} / `
+                    + `${ethers.formatEther(campaign.goal.toString())} ETH`;
             }
-    
-
-            campaignTitle.textContent = `Campaign ${i + 1}: ${campaign.title}`;
-            campaignDescription.textContent = campaign.description;
-            contributeButton.textContent = "Contribute";
-            withdrawButton.textContent = 'Withdraw';
-            contributeButton.addEventListener("click", () => contributeToCampaign(i));
-            withdrawButton.addEventListener("click", () => withdrawFromCampaign(i));
 
             progressBarDiv.appendChild(progressBar);
             progressBarDiv.appendChild(progressLabel);
-
-            const buttonContainer = document.createElement("div");
-            buttonContainer.classList.add("columns", "is-mobile");
-
-            const contributeColumn = document.createElement("div");
-            contributeColumn.classList.add("column");
-            const withdrawColumn = document.createElement("div");
-            withdrawColumn.classList.add("column");
-
-            contributeButton.classList.add("is-fullwidth");
-            withdrawButton.classList.add("is-fullwidth");
-
-            contributeColumn.appendChild(contributeButton);
-            withdrawColumn.appendChild(withdrawButton);
-
-            buttonContainer.appendChild(contributeColumn);
-            buttonContainer.appendChild(withdrawColumn);
-            
-            campaignDiv.appendChild(campaignTitle);
-            campaignDiv.appendChild(campaignDescription);
             campaignDiv.appendChild(progressBarDiv);
 
+            const contributeRow = document.createElement("div");
+            contributeRow.classList.add("columns", "is-mobile", "is-vcentered", "mb-3");
+
+            const inputColumn = document.createElement("div");
+            inputColumn.classList.add("column", "is-half");
+            const contributeInput = document.createElement("input");
+            contributeInput.classList.add("input", "is-fullwidth");
+            contributeInput.type = "number";
+            contributeInput.placeholder = "Amount in ETH";
+            contributeInput.step = 0.1;
+            inputColumn.appendChild(contributeInput);
+
+            const buttonColumn = document.createElement("div");
+            buttonColumn.classList.add("column", "is-half");
+            const contributeButton = document.createElement("button");
+            contributeButton.classList.add("button", "is-primary", "is-fullwidth");
+            contributeButton.textContent = "Contribute";
+
+            contributeButton.addEventListener("click", () => {
+                const amount = contributeInput.value.trim();
+                if (!amount || isNaN(amount) || Number(amount) <= 0) {
+                    alert("Please enter a valid ETH amount");
+                    return;
+                }
+                contributeToCampaign(i, amount);
+            });
+
+            buttonColumn.appendChild(contributeButton);
+            contributeRow.appendChild(inputColumn);
+            contributeRow.appendChild(buttonColumn);
+       
+            const withdrawRow = document.createElement("div");
+            withdrawRow.classList.add("is-mobile", "mb-3");
+
+            const withdrawCol = document.createElement("div");
+            const withdrawButton = document.createElement("button");
+            withdrawButton.classList.add("button", "is-warning", "is-fullwidth");
+            withdrawButton.textContent = "Withdraw";
+
+            if (campaign.fundsWithdrawn) {
+                withdrawButton.disabled = true;
+                withdrawButton.style.cursor = "not-allowed";
+            }
+
+            withdrawButton.addEventListener("click", () => withdrawFromCampaign(i));
+
+            withdrawCol.appendChild(withdrawButton);
+            withdrawRow.appendChild(withdrawCol);
+
             if (campaign.isActive) {
-                campaignDiv.appendChild(buttonContainer);
+                campaignDiv.appendChild(contributeRow);
                 campaignList.appendChild(campaignDiv);
             } else {
+                campaignDiv.appendChild(withdrawRow);
                 completedCampaignList.appendChild(campaignDiv);
             }
         }
@@ -451,26 +491,26 @@ async function getCampaignDetails() {
     }
 }
 
-async function contributeToCampaign(campaignId) {
-	if (!signer) {
-		console.error("No wallet detected");
-		return;
-	}
+async function contributeToCampaign(campaignId, ethAmount) {
+    if (!signer) {
+        console.error("No wallet detected");
+        return;
+    }
 
-	try {
-		const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+    try {
+        const contract = new ethers.Contract(contractAddress, contractAbi, signer);
 
-		const tx = await contract.contributeToCampaign(campaignId, {
-			value: ethers.parseEther("1.0")
-		});
+        const tx = await contract.contributeToCampaign(campaignId, {
+            value: ethers.parseEther(ethAmount)
+        });
 
-		const receipt = await tx.wait();
-		console.log("Succesfully contributed to campaign:", receipt);
-		alert("Contribution successful!");
-		window.location.reload();
-	} catch (error) {
-		console.error("Error contributing to campaign:", error);
-	}
+        const receipt = await tx.wait();
+        console.log("Successfully contributed to campaign:", receipt);
+        alert("Contribution successful!");
+        window.location.reload();
+    } catch (error) {
+        console.error("Error contributing to campaign:", error);
+    }
 }
 
 async function withdrawFromCampaign(campaignId) {

@@ -23,13 +23,14 @@ contract CrowdfunderTest is Test {
         uint256 finalCampaignCount = crowdfunder.getCampaignCount();
         assertEq(initialCampaignCount + finalCampaignCount, 1);
 
-        (uint256 storedGoal, uint256 storedDeadline, , string memory storedTitle, , address creator) = 
+        (uint256 storedGoal, uint256 storedDeadline, , string memory storedTitle, , address creator, bool isActive) = 
         crowdfunder.getCampaignDetails(0);
 
         assertEq(storedGoal, goal);
         assertEq(storedDeadline, deadline);
         assertEq(storedTitle, "Test Campaign");
         assertEq(creator, address(this));
+        assertEq(isActive, true);
     }
 
     function testContributeToCampaign() public {
@@ -37,11 +38,11 @@ contract CrowdfunderTest is Test {
         uint256 deadline = block.timestamp + 7 days;
 
         crowdfunder.createCampaign(goal, deadline, "Test Campaign", "Test Description");
-        (,,uint256 initialAmountFunded,,,) = crowdfunder.getCampaignDetails(0);
+        (,,uint256 initialAmountFunded,,,,) = crowdfunder.getCampaignDetails(0);
 
         crowdfunder.contributeToCampaign{value: 1 ether}(0);
         
-        (,,uint256 amountFunded,,,) = crowdfunder.getCampaignDetails(0);
+        (,,uint256 amountFunded,,,,) = crowdfunder.getCampaignDetails(0);
 
         assertEq(amountFunded + initialAmountFunded, 1 ether);
     }
