@@ -1,6 +1,6 @@
 console.log("Ethers.js version:", ethers.version);
 
-const contractAddress = "0xEC59c8B9007db6b5E98374E6a379255FEb29CB49";
+const contractAddress = "0xB0a496011C2c41D2D0f5c10F884fC8AAcdD2433D";
 const contractAbi = [
 	{
 		"inputs": [],
@@ -363,6 +363,8 @@ async function createCampaign(ethAmount, deadline, title, description) {
     }
 
     try {
+        showLoading();
+
         const contract = new ethers.Contract(contractAddress, contractAbi, signer);
 		console.log(signer)
 
@@ -379,6 +381,8 @@ async function createCampaign(ethAmount, deadline, title, description) {
         console.log("Transaction complete:", receipt);
     } catch (error) {
         console.error("Error interacting with the contract:", error);
+    } finally {
+        hideLoading();
     }
 
     window.location.reload();
@@ -391,7 +395,7 @@ async function getCampaignDetails() {
     if (hasFetchedCampaigns) return;
     hasFetchedCampaigns = true;
 
-    provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545"); 
+    provider = new ethers.JsonRpcProvider("https://eth-sepolia.g.alchemy.com/v2/Bj51KvtOXtSTVC-3rnu8lRl-LaHjcpK9"); 
 
     const contract = new ethers.Contract(contractAddress, contractAbi, provider);
 
@@ -562,6 +566,8 @@ async function contributeToCampaign(campaignId, ethAmount) {
     }
 
     try {
+        showLoading();
+
         const contract = new ethers.Contract(contractAddress, contractAbi, signer);
 
         const tx = await contract.contributeToCampaign(campaignId, {
@@ -586,10 +592,9 @@ async function contributeToCampaign(campaignId, ethAmount) {
         
     } catch (error) {
         console.error("Error contributing to campaign:", error);
+    } finally {
+        hideLoading();
     }
-
-   
-
 }
 
 async function withdrawFromCampaign(campaignId) {
@@ -616,16 +621,28 @@ async function withdrawFromCampaign(campaignId) {
     }
 
     try {
+        showLoading();
 
         const tx = await contract.withdrawFromCampaign(campaignId);
         const receipt = await tx.wait();
         console.log("Successfully withdrew!", receipt);
-        
-        window.location.reload();
+
+        Swal.fire({
+            position: "top-end",
+            width: 300,
+            title: "Sucessfully withdrawn from campaign.",
+            timer: 1500
+        });
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
         
     } catch (error) {
         console.log("Could not withdraw from campaign.", error);
         return;
+    } finally {
+        hideLoading();
     }
 }
 
@@ -746,6 +763,15 @@ if (window.ethereum) {
     });
 }
 
+function showLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.style.display = 'flex';
+}
+
+function hideLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.style.display = 'none';
+}
 
 const modal = document.getElementById("createCampaignModal");
 const openModalButton = document.getElementById("createCampaignModalButton");
