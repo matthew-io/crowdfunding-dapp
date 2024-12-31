@@ -28,7 +28,8 @@ contract Interactions is Script {
             string memory title,
             string memory description,
             address creator,
-            bool isActive
+            bool isActive,
+            bool fundsWithdrawn
         ) = crowdfunder.getCampaignDetails(0);
 
         console.log("Goal:", goal);
@@ -38,6 +39,7 @@ contract Interactions is Script {
         console.log("Description:", description);
         console.log("Address:", creator);
         console.log("Active:", isActive);
+        console.log("Funds withdrawn:", fundsWithdrawn);
 
         vm.stopBroadcast();
     }  

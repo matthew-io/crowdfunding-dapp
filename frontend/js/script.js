@@ -506,11 +506,26 @@ async function contributeToCampaign(campaignId, ethAmount) {
 
         const receipt = await tx.wait();
         console.log("Successfully contributed to campaign:", receipt);
-        alert("Contribution successful!");
-        window.location.reload();
+        
+        Swal.fire({
+            position: "top-end",
+            width: 300,
+            title: "Contribution of " + ethAmount + " ETH was successful!",
+            showConfirmationButton: false,
+            timer: 1500
+        });
+
+        setTimeout(() => {
+            window.location.reload()
+        }, 2000);
+
+        
     } catch (error) {
         console.error("Error contributing to campaign:", error);
     }
+
+   
+
 }
 
 async function withdrawFromCampaign(campaignId) {
